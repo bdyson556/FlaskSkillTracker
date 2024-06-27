@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Skills</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .skills-table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        .skills-table th {
+            background-color: #f2f2f2;
+        }
+        .skills-table th:nth-child(2), .skills-table td:nth-child(2) {
+            text-align: left; /* Left-align the "Skill" column */
+        }
+        .skills-table th:nth-child(3), .skills-table th:nth-child(4) {
+            text-align: center; /* Center-align the headers for "Level" and "Priority" columns */
+        }
+        .skills-table td:nth-child(3), .skills-table td:nth-child(4) {
+            text-align: right; /* Right-align the "Level" and "Priority" columns */
+        }
+        .skills-table td {
+            padding: 10px 50px
+        }
+        .dummy-button {
+            background-color: #f2f2f2;
+            border: none;
+            cursor: pointer;
+        }
+        .dummy-button:hover {
+            background-color: #ddd;
+        }
+        .skills-table tr td:first-child {
+            width: 1%;
+            white-space: nowrap;
+        }
+        .sort-link {
+            color: inherit;
+            text-decoration: none;
+        }
+    </style>
+    <script>
+        function makeEditable(cell) {
+            cell.contentEditable = true;
+            cell.focus();
+        }
+
+        function saveEdit(cell, column, skill) {
+            cell.contentEditable = false;
+            var newValue = cell.innerText;
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/update_skill", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify({
+                "skill": skill,
+                "column": column,
+                "new_value": newValue
+            }));
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+                    alert("Value updated successfully!");
+                } else {
+                    alert("Error updating value.");
+                }
+            };
+        }
+    </script>
+</head>
+<body>
+    <h1 style="text-align: center;">Update Skills</h1>
+    <div>
+        <table class="skills-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        <a class="sort-link" href="?sort_by=skill&sort_order={{ 'asc' if sort_by != 'skill' or sort_order == 'desc' else 'desc' }}">
+                            Skill {% if sort_by == 'skill' %}{{ '▲' if sort_order == 'asc' else '▼' }}{% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a class="sort-link" href="?sort_by=lvl&sort_order={{ 'asc' if sort_by != 'lvl' or sort_order == 'desc' else 'desc' }}">
+                            Level {% if sort_by == 'lvl' %}{{ '▲' if sort_order == 'asc' else '▼' }}{% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a class="sort-link" href="?sort_by=priority&sort_order={{ 'asc' if sort_by != 'priority' or sort_order == 'desc' else 'desc' }}">
+                            Priority {% if sort_by == 'priority' %}{{ '▲' if sort_order == 'asc' else '▼' }}{% endif %}
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+<!--            <tbody>-->
+<!--                {{ skills|safe }}-->
+<!--            </tbody>-->
+<!--            <tbody>-->
+<!--                {% for skill in skills %}-->
+<!--                <tr>-->
+<!--                    <td><button class="dummy-button">></button></td>-->
+<!--                    <td>{{ skill.skill }}</td>-->
+<!--                    <td contenteditable="true" onfocus="makeEditable(this)" onblur="saveEdit(this, 'Level', '{{ skill.skill }}')">{{ skill.lvl }}</td>-->
+<!--                    <td contenteditable="true" onfocus="makeEditable(this)" onblur="saveEdit(this, 'Priority', '{{ skill.skill }}')">{{ skill.priority }}</td>-->
+<!--                </tr>-->
+<!--                {% endfor %}-->
+<!--            </tbody>-->
+            <tbody>
+                {% for row in skills.itertuples() %}
+                <tr>
+                    <td><button class="dummy-button">></button></td>
+                    <td>{{ row.skill }}</td>
+                    <td contenteditable="true" onfocus="makeEditable(this)" onblur="saveEdit(this, 'Level', '{{ row.skill }}')">{{ row.lvl }}</td>
+                    <td contenteditable="true" onfocus="makeEditable(this)" onblur="saveEdit(this, 'Priority', '{{ row.skill }}')">{{ row.priority }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div style="text-align: center;">
+        <button onclick="window.location.href='{{ url_for('index') }}';">Go Back</button>
+    </div>
+</body>
+</html>

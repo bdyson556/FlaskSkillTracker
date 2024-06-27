@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CharbroiledMemes</title>
+    <title>Skill Tracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="refresh" content="30;url=http://127.0.0.1:5001" />
 <!--    <style>-->
@@ -10,9 +10,10 @@
 <!--    </style>-->
 </head>
 <body>
-    <h1>A website to serve up some juicy, char-broiled memes.</h1>
-    <p>Here is your meme! This will refresh in 30 seconds!</p>
-    <p><img src="{{meme_pic}}"></p>
-    <p>Courtesy of: {{subreddit}}</p>
+    <h1>Skill Tracker</h1>
+    <p><img src="{{ url_for('static', filename='skills_bar.png') }}" alt="Skills"></p>
+    <form action="{{ url_for('edit_skills') }}" method="get">
+        <button type="submit">Edit skills</button>
+    </form>
 </body>
 </html>
