@@ -44,13 +44,21 @@
     </style>
     <script>
         function makeEditable(cell) {
-            cell.contentEditable = true;
+<!--            cell.contentEditable = true;-->
+            cell.classList.add('editable');
             cell.focus();
+            cell.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    saveEdit(cell, cell.dataset.column, cell.dataset.skill);
+                }
+            });
         }
 
         function saveEdit(cell, column, skill) {
-            cell.contentEditable = false;
+<!--            cell.contentEditable = false;-->
             var newValue = cell.innerText;
+            cell.classList.remove('editable');
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "/update_skill", true);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -60,13 +68,21 @@
                 "new_value": newValue
             }));
             xhr.onload = function() {
-                if (xhr.status == 200) {
-                    alert("Value updated successfully!");
-                } else {
+                if (xhr.status != 200) {
                     alert("Error updating value.");
                 }
             };
         }
+<!--        document.addEventListener('DOMContentLoaded', function() {-->
+<!--            document.querySelectorAll('[contenteditable="true"]').forEach(function(cell) {-->
+<!--                cell.addEventListener('keydown', function(event) {-->
+<!--                    if (event.key === 'Enter') {-->
+<!--                        event.preventDefault();-->
+<!--                        saveEdit(cell, cell.dataset.column, cell.dataset.skill);-->
+<!--                    }-->
+<!--                });-->
+<!--            });-->
+<!--        });-->
     </script>
 </head>
 <body>
@@ -93,26 +109,13 @@
                     </th>
                 </tr>
             </thead>
-<!--            <tbody>-->
-<!--                {{ skills|safe }}-->
-<!--            </tbody>-->
-<!--            <tbody>-->
-<!--                {% for skill in skills %}-->
-<!--                <tr>-->
-<!--                    <td><button class="dummy-button">></button></td>-->
-<!--                    <td>{{ skill.skill }}</td>-->
-<!--                    <td contenteditable="true" onfocus="makeEditable(this)" onblur="saveEdit(this, 'Level', '{{ skill.skill }}')">{{ skill.lvl }}</td>-->
-<!--                    <td contenteditable="true" onfocus="makeEditable(this)" onblur="saveEdit(this, 'Priority', '{{ skill.skill }}')">{{ skill.priority }}</td>-->
-<!--                </tr>-->
-<!--                {% endfor %}-->
-<!--            </tbody>-->
             <tbody>
                 {% for row in skills.itertuples() %}
                 <tr>
                     <td><button class="dummy-button">></button></td>
                     <td>{{ row.skill }}</td>
-                    <td contenteditable="true" onfocus="makeEditable(this)" onblur="saveEdit(this, 'Level', '{{ row.skill }}')">{{ row.lvl }}</td>
-                    <td contenteditable="true" onfocus="makeEditable(this)" onblur="saveEdit(this, 'Priority', '{{ row.skill }}')">{{ row.priority }}</td>
+                    <td contenteditable="true" data-column="lvl" data-skill="{{ row.skill }}" onfocus="makeEditable(this)" onblur="saveEdit(this, 'lvl', '{{ row.skill }}')">{{ row.lvl }}</td>
+                    <td contenteditable="true" data-column="priority" data-skill="{{ row.skill }}" onfocus="makeEditable(this)" onblur="saveEdit(this, 'priority', '{{ row.skill }}')">{{ row.priority }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
