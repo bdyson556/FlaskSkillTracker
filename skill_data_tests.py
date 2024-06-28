@@ -10,22 +10,22 @@ status_dict = {
 }
 
 
-
-def get_status_string(status_num):
+def get_task_status_string(status_num):
     return status_dict.get(status_num, "unknown status")
 
 def load_skills_df():
     data = None
-    with open ("skills_and_tasks.json", "r") as file:
+    with open("skills_and_tasks.json", "r") as file:
         data = json.load(file)
-    df = pd.DataFrame.from_dict(data['skills'], orient="index")
+    df = pd.DataFrame.from_dict(data['Skills'], orient="index")
     df.reset_index(inplace=True)
-    df.rename(columns={"index": "skill"}, inplace=True)
+    df.rename(columns={"index": "Skill"}, inplace=True)
+    df = df.where(pd.notnull(df), None)
     return df
 
 def create_skills_bar(df):
     plt.figure(figsize=(10, 6))
-    plt.bar(df['index'], df['lvl'], color='blue') # TODO rename "index" to "skill"
+    plt.bar(df['index'], df['Level'], color='blue') # TODO rename "index" to "skill"
     plt.xlabel('Skill')
     plt.ylabel('Level')
     plt.title('Skill Levels')
